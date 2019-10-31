@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request,make_response
 import cv2
 from flask import jsonify
 import argparse
 import numpy as np
+
 
 
 app = Flask(__name__)
@@ -56,12 +57,16 @@ def handle_data():
 
     colorized = (255 * colorized).astype("uint8")
 
-    cv2.imshow("Colorized", colorized)
-    cv2.waitKey(0)
+    #cv2.imshow("Colorized", colorized)
+    retval, buffer = cv2.imencode('.jpeg', colorized)
+    response = make_response(buffer.tobytes())
+    response.headers['Content-Type'] = 'image/png'
+    return response
+    #cv2.waitKey(0)
 
 
     
-    return projectpath
+    #return projectpath
 
 if __name__ == '__main__':
     app.run()
