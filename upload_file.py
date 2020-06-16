@@ -3,11 +3,7 @@ import cv2
 from flask import jsonify
 import argparse
 import numpy as np
-
-
-
 app = Flask(__name__)
-
 @app.route('/')
 def index():
     return render_template('template.html')
@@ -26,22 +22,17 @@ def handle_data():
     args = ap.parse_args()
     net = cv2.dnn.readNetFromCaffe(args.prototxt, args.model)
     pts = np.load(args.points)
-
     class8 = net.getLayerId("class8_ab")
     conv8 = net.getLayerId("conv8_313_rh")
     pts = pts.transpose().reshape(2, 313, 1, 1)
     net.getLayer(class8).blobs = [pts.astype("float32")]
     net.getLayer(conv8).blobs = [np.full([1, 313], 2.606, dtype="float32")]
-
     image = cv2.imread(args.image)
     scaled = image.astype("float32") / 255.0
     lab = cv2.cvtColor(scaled, cv2.COLOR_BGR2LAB)
     resized = cv2.resize(lab, (224, 224))
     L = cv2.split(resized)[0]
     L -= 50
-
-
-
     net.setInput(cv2.dnn.blobFromImage(L))
     ab = net.forward()[0, :, :, :].transpose((1, 2, 0))
 
@@ -57,16 +48,10 @@ def handle_data():
 
     colorized = (255 * colorized).astype("uint8")
 
-    #cv2.imshow("Colorized", colorized)
     retval, buffer = cv2.imencode('.jpeg', colorized)
     response = make_response(buffer.tobytes())
     response.headers['Content-Type'] = 'image/png'
     return response
-    #cv2.waitKey(0)
-
-
-    
-    #return projectpath
-
+   
 if __name__ == '__main__':
     app.run()
