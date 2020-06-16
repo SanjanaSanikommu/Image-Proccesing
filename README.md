@@ -4,10 +4,15 @@ Conversion of black and white images to color
 Requriements:
 ==============
 OS : Linux 
+
 FrameWork - Flask
+
 Model: Caffe
+
 Lang: Python 
+
 Pacakges: numpy, opencv
+
 Frontend: Html,css
 
 Running of project:
